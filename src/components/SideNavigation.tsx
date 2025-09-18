@@ -9,6 +9,12 @@ import {
   FileText,
   Train,
   Map,
+  Shield,
+  ClipboardList,
+  Tag,
+  Gauge,
+  Sparkles,
+  Grid3X3,
 } from 'lucide-react';
 
 interface NavItem {
@@ -26,14 +32,21 @@ const navigationItems: NavItem[] = [
   { id: 'simulation', name: 'Simulation', path: '/simulation', icon: Play },
   { id: 'reports', name: 'Reports', path: '/reports', icon: FileText },
   { id: 'live-map', name: 'Live Train Map', path: '/live-map', icon: Map },
+  { id: 'fitness-certificates', name: 'Fitness Certificates', path: '/fitness-certificates', icon: Shield },
+  { id: 'job-cards', name: 'Job Cards', path: '/job-cards', icon: ClipboardList },
+  { id: 'branding-priorities', name: 'Branding Priorities', path: '/branding-priorities', icon: Tag },
+  { id: 'mileage-logs', name: 'Mileage Logs', path: '/mileage-logs', icon: Gauge },
+  { id: 'cleaning-slots', name: 'Cleaning Slots', path: '/cleaning-slots', icon: Sparkles },
+  { id: 'stabling-geometry', name: 'Stabling Geometry', path: '/stabling-geometry', icon: Grid3X3 },
 ];
 
 const SideNavigation: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="w-64 bg-white shadow-sm border-r border-gray-200 h-full">
-      <div className="p-6">
+    <div className="w-64 bg-white shadow-sm border-r border-gray-200 h-full flex flex-col">
+      {/* Header - Fixed */}
+      <div className="p-6 flex-shrink-0">
         <div className="flex items-center space-x-3 mb-8">
           <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
             <Train className="w-5 h-5 text-primary-600" />
@@ -43,7 +56,10 @@ const SideNavigation: React.FC = () => {
             <p className="text-sm text-gray-500">25 Trains Active</p>
           </div>
         </div>
+      </div>
 
+      {/* Navigation - Scrollable */}
+      <div className="flex-1 overflow-y-auto px-6 pb-6">
         <nav className="space-y-2">
           {navigationItems.map((item) => {
             const isActive = location.pathname === item.path;

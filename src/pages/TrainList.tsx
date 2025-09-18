@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Download, Eye, AlertCircle, CheckCircle, Clock, Wrench, Upload, Settings, Shield, AlertTriangle } from 'lucide-react';
-import { allTrains, mockAuditLogs } from '../data/mockData';
-import { Train, AuditLog } from '../types';
+import { Search, Filter, Download, Eye, AlertCircle, CheckCircle, Clock, Wrench, Upload, Shield, AlertTriangle } from 'lucide-react';
+import { allTrains } from '../data/mockData';
+import { Train } from '../types';
 
 const TrainList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,6 +78,51 @@ const TrainList: React.FC = () => {
     return diffDays <= 30; // Within 30 days
   };
 
+  // New utility functions for enhanced display
+  const calculateMileageStatus = (mileage: number) => {
+    // Assume maintenance needed every 20,000 km
+    const maintenanceInterval = 20000;
+    const remaining = maintenanceInterval - (mileage % maintenanceInterval);
+    const hoursRemaining = Math.floor(remaining / 50); // Assuming ~50 km/hour average
+    
+    if (remaining < 1000) {
+      return { status: 'critical', remaining, hours: hoursRemaining, message: `${hoursRemaining}h left` };
+    } else if (remaining < 3000) {
+      return { status: 'warning', remaining, hours: hoursRemaining, message: `${hoursRemaining}h left` };
+    } else {
+      return { status: 'good', remaining, hours: hoursRemaining, message: `${hoursRemaining}h left` };
+    }
+  };
+
+  const getFitnessValidityStatus = (date: Date) => {
+    const now = new Date();
+    const diffTime = date.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) {
+      return { status: 'expired', message: 'Expired', color: 'text-red-600' };
+    } else if (diffDays <= 30) {
+      return { status: 'expiring', message: 'Expiring Soon', color: 'text-orange-600' };
+    } else {
+      return { status: 'ok', message: 'Valid', color: 'text-green-600' };
+    }
+  };
+
+  const formatCleaningSlotTime = (slot: string | null) => {
+    if (!slot) return 'Not assigned';
+    
+    // Extract time from format like "Slot A - 06:00"
+    const timeMatch = slot.match(/(\d{1,2}):(\d{2})/);
+    if (!timeMatch) return slot;
+    
+    const hours = parseInt(timeMatch[1]);
+    const minutes = timeMatch[2];
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    
+    return slot.replace(/\d{1,2}:\d{2}/, `${displayHours}:${minutes} ${ampm}`);
+  };
+
   // Admin Control Handlers
   const handleAdminAction = (type: string, trainId: string) => {
     setPendingAction({ type, trainId });
@@ -88,16 +133,6 @@ const TrainList: React.FC = () => {
     if (pendingAction) {
       // Simulate API call
       console.log(`Admin action: ${pendingAction.type} for train ${pendingAction.trainId}`);
-      
-      // Add to audit log (in real app, this would be an API call)
-      const newAuditEntry = {
-        id: `audit-${Date.now()}`,
-        timestamp: new Date(),
-        userId: 'admin-user',
-        action: pendingAction.type,
-        target: pendingAction.trainId,
-        description: `Manual ${pendingAction.type.toLowerCase()} action performed on train ${pendingAction.trainId}`
-      };
       
       // In real app, you would update the train status here
       alert(`${pendingAction.type} action completed for train ${pendingAction.trainId}`);
@@ -133,13 +168,13 @@ const TrainList: React.FC = () => {
             <Shield className="w-4 h-4" />
             <span>{showAdminControls ? 'Exit Admin Mode' : 'Admin Controls'}</span>
           </button>
-          <button 
+          {/* <button 
             onClick={() => setShowUploadModal(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Upload className="w-4 h-4" />
             <span>Upload Data</span>
-          </button>
+          </button> */}
           <button className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
             <Download className="w-4 h-4" />
             <span>Export List</span>
@@ -240,9 +275,9 @@ const TrainList: React.FC = () => {
                       <div className={`font-medium ${isExpiringSoon(train.fitnessValidity) ? 'text-danger-600' : 'text-gray-900'}`}>
                         {train.fitnessValidity.toLocaleDateString()}
                       </div>
-                      {isExpiringSoon(train.fitnessValidity) && (
-                        <div className="text-xs text-danger-500">Expiring soon</div>
-                      )}
+                      <div className={`text-xs ${getFitnessValidityStatus(train.fitnessValidity).color}`}>
+                        {getFitnessValidityStatus(train.fitnessValidity).message}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -259,11 +294,24 @@ const TrainList: React.FC = () => {
                       {train.brandingPriority}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {train.mileage.toLocaleString()}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm">
+                      <div className="font-medium text-gray-900">
+                        {train.mileage.toLocaleString()} km
+                      </div>
+                      <div className={`text-xs ${
+                        calculateMileageStatus(train.mileage).status === 'critical' 
+                          ? 'text-red-600' 
+                          : calculateMileageStatus(train.mileage).status === 'warning'
+                            ? 'text-yellow-600'
+                            : 'text-green-600'
+                      }`}>
+                        {calculateMileageStatus(train.mileage).message}
+                      </div>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {train.cleaningSlot || '-'}
+                    {formatCleaningSlotTime(train.cleaningSlot)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {train.bayPosition}
@@ -435,7 +483,18 @@ const TrainList: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600">Mileage</label>
-                <p className="text-gray-900">{selectedTrain.mileage.toLocaleString()} km</p>
+                <div className="flex items-center space-x-2">
+                  <p className="text-gray-900">{selectedTrain.mileage.toLocaleString()} km</p>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    calculateMileageStatus(selectedTrain.mileage).status === 'critical' 
+                      ? 'bg-red-100 text-red-700' 
+                      : calculateMileageStatus(selectedTrain.mileage).status === 'warning'
+                        ? 'bg-yellow-100 text-yellow-700'
+                        : 'bg-green-100 text-green-700'
+                  }`}>
+                    {calculateMileageStatus(selectedTrain.mileage).message}
+                  </span>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600">Bay Position</label>
@@ -449,13 +508,24 @@ const TrainList: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600">Fitness Validity</label>
-                <p className={`${isExpiringSoon(selectedTrain.fitnessValidity) ? 'text-red-600' : 'text-gray-900'}`}>
-                  {selectedTrain.fitnessValidity.toLocaleDateString()}
-                </p>
+                <div className="flex items-center space-x-2">
+                  <p className={`${isExpiringSoon(selectedTrain.fitnessValidity) ? 'text-red-600' : 'text-gray-900'}`}>
+                    {selectedTrain.fitnessValidity.toLocaleDateString()}
+                  </p>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    getFitnessValidityStatus(selectedTrain.fitnessValidity).status === 'expired'
+                      ? 'bg-red-100 text-red-700'
+                      : getFitnessValidityStatus(selectedTrain.fitnessValidity).status === 'expiring'
+                        ? 'bg-orange-100 text-orange-700'
+                        : 'bg-green-100 text-green-700'
+                  }`}>
+                    {getFitnessValidityStatus(selectedTrain.fitnessValidity).message}
+                  </span>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600">Cleaning Slot</label>
-                <p className="text-gray-900">{selectedTrain.cleaningSlot || 'Not assigned'}</p>
+                <p className="text-gray-900">{formatCleaningSlotTime(selectedTrain.cleaningSlot)}</p>
               </div>
             </div>
             

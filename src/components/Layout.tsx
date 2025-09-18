@@ -1,7 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import TopNavigation from './TopNavigation';
 import SideNavigation from './SideNavigation';
+import ProtectedRoute from './ProtectedRoute';
+import LoginPage from './LoginPage';
 import Dashboard from '../pages/Dashboard';
 import TrainList from '../pages/TrainList';
 import Parameters from '../pages/Parameters';
@@ -9,30 +12,111 @@ import Alerts from '../pages/Alerts';
 import Simulation from '../pages/Simulation';
 import Reports from '../pages/Reports';
 import LiveMapPage from '../pages/LiveMapPage';
+import FitnessCertificatesManagement from '../pages/FitnessCertificatesManagement';
+import JobCardsManagement from '../pages/JobCardsManagement';
+import BrandingPrioritiesManagement from '../pages/BrandingPrioritiesManagement';
+import MileageLogsManagement from '../pages/MileageLogsManagement';
+import CleaningSlotsManagement from '../pages/CleaningSlotsManagement';
+import StablingGeometryManagement from '../pages/StablingGeometryManagement';
+
+const MainApp: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  return (
+    <div className="h-screen bg-gray-50 flex flex-col">
+      <TopNavigation />
+      <div className="flex flex-1 overflow-hidden">
+        <SideNavigation />
+        <main className="flex-1 overflow-auto">
+          <div className="p-6">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/trains" element={<TrainList />} />
+              <Route path="/parameters" element={<Parameters />} />
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/simulation" element={<Simulation />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/live-map" element={<LiveMapPage />} />
+              
+              {/* Protected Management Routes */}
+              <Route 
+                path="/fitness-certificates" 
+                element={
+                  <ProtectedRoute requiredPermission="fitness_certificates:read">
+                    <FitnessCertificatesManagement />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/job-cards" 
+                element={
+                  <ProtectedRoute requiredPermission="job_cards:read">
+                    <JobCardsManagement />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/branding-priorities" 
+                element={
+                  <ProtectedRoute requiredPermission="branding_priorities:read">
+                    <BrandingPrioritiesManagement />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mileage-logs" 
+                element={
+                  <ProtectedRoute requiredPermission="mileage_logs:read">
+                    <MileageLogsManagement />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/cleaning-slots" 
+                element={
+                  <ProtectedRoute requiredPermission="cleaning_slots:read">
+                    <CleaningSlotsManagement />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/stabling-geometry" 
+                element={
+                  <ProtectedRoute requiredPermission="stabling_geometry:read">
+                    <StablingGeometryManagement />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
 
 const Layout: React.FC = () => {
   return (
-    <Router>
-      <div className="h-screen bg-gray-50 flex flex-col">
-        <TopNavigation />
-        <div className="flex flex-1 overflow-hidden">
-          <SideNavigation />
-          <main className="flex-1 overflow-auto">
-            <div className="p-6">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/trains" element={<TrainList />} />
-                <Route path="/parameters" element={<Parameters />} />
-                <Route path="/alerts" element={<Alerts />} />
-                <Route path="/simulation" element={<Simulation />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/live-map" element={<LiveMapPage />} />
-              </Routes>
-            </div>
-          </main>
-        </div>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <MainApp />
+      </Router>
+    </AuthProvider>
   );
 };
 

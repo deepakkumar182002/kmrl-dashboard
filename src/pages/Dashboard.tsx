@@ -1,11 +1,12 @@
 import React from 'react';
-import { Train, Clock, Wrench, Sparkles } from 'lucide-react';
+import { Train, Clock, Wrench, Sparkles, Shield, ClipboardList, Tag, Gauge, Grid3X3 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { allTrains } from '../data/mockData';
 import EnhancedDepotMap from '../components/EnhancedDepotMap';
 import AnalyticsDashboard from '../components/AnalyticsDashboard';
 
 const Dashboard: React.FC = () => {
+  
   // Calculate statistics
   const trainCounts = {
     total: allTrains.length,
@@ -13,6 +14,48 @@ const Dashboard: React.FC = () => {
     standby: allTrains.filter(t => t.status === 'Standby').length,
     maintenance: allTrains.filter(t => t.status === 'Maintenance').length,
     cleaning: allTrains.filter(t => t.status === 'Cleaning').length,
+  };
+
+  // Mock management panel data - replace with real data
+  const managementStats = {
+    fitnessCertificates: {
+      total: 25,
+      expiringSoon: 3,
+      fit: 22,
+      notFit: 3
+    },
+    jobCards: {
+      total: 45,
+      open: 12,
+      inProgress: 8,
+      closed: 25,
+      overdue: 4
+    },
+    brandingPriorities: {
+      total: 18,
+      active: 14,
+      completed: 3,
+      pending: 1,
+      totalValue: 2500000
+    },
+    mileageLogs: {
+      total: 156,
+      verified: 145,
+      pending: 11,
+      avgDailyKm: 285
+    },
+    cleaningSlots: {
+      total: 24,
+      occupied: 18,
+      available: 6,
+      maintenance: 2
+    },
+    stablingGeometry: {
+      total: 32,
+      occupied: 28,
+      available: 4,
+      capacity: 35
+    }
   };
 
   // Mileage distribution data
@@ -113,6 +156,229 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Management Panel Summary Cards */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900">Management Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Fitness Certificates */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-gray-900">Fitness Certificates</h3>
+                  <p className="text-xs text-gray-500">Train compliance status</p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Total Certificates</span>
+                <span className="text-sm font-medium">{managementStats.fitnessCertificates.total}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Fit Trains</span>
+                <span className="text-sm font-medium text-green-600">{managementStats.fitnessCertificates.fit}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Expiring Soon</span>
+                <span className="text-sm font-medium text-orange-600">{managementStats.fitnessCertificates.expiringSoon}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Job Cards */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <ClipboardList className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-gray-900">Job Cards</h3>
+                  <p className="text-xs text-gray-500">Maintenance tasks</p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Total Jobs</span>
+                <span className="text-sm font-medium">{managementStats.jobCards.total}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">In Progress</span>
+                <span className="text-sm font-medium text-blue-600">{managementStats.jobCards.inProgress}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Overdue</span>
+                <span className="text-sm font-medium text-red-600">{managementStats.jobCards.overdue}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Branding Priorities */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Tag className="w-5 h-5 text-purple-600" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-gray-900">Branding Priorities</h3>
+                  <p className="text-xs text-gray-500">Advertisement contracts</p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Active Contracts</span>
+                <span className="text-sm font-medium">{managementStats.brandingPriorities.active}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Total Value</span>
+                <span className="text-sm font-medium text-green-600">₹{(managementStats.brandingPriorities.totalValue / 100000).toFixed(1)}L</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Pending</span>
+                <span className="text-sm font-medium text-orange-600">{managementStats.brandingPriorities.pending}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Mileage Logs */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <Gauge className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-gray-900">Mileage Logs</h3>
+                  <p className="text-xs text-gray-500">Daily tracking</p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Total Logs</span>
+                <span className="text-sm font-medium">{managementStats.mileageLogs.total}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Verified</span>
+                <span className="text-sm font-medium text-green-600">{managementStats.mileageLogs.verified}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Avg Daily KM</span>
+                <span className="text-sm font-medium text-blue-600">{managementStats.mileageLogs.avgDailyKm}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Cleaning Slots */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-pink-600" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-gray-900">Cleaning Slots</h3>
+                  <p className="text-xs text-gray-500">Bay scheduling</p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Total Slots</span>
+                <span className="text-sm font-medium">{managementStats.cleaningSlots.total}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Occupied</span>
+                <span className="text-sm font-medium text-blue-600">{managementStats.cleaningSlots.occupied}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Available</span>
+                <span className="text-sm font-medium text-green-600">{managementStats.cleaningSlots.available}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stabling Geometry */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
+                  <Grid3X3 className="w-5 h-5 text-cyan-600" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-gray-900">Stabling Geometry</h3>
+                  <p className="text-xs text-gray-500">Depot positioning</p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Total Bays</span>
+                <span className="text-sm font-medium">{managementStats.stablingGeometry.total}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Occupied</span>
+                <span className="text-sm font-medium text-blue-600">{managementStats.stablingGeometry.occupied}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Utilization</span>
+                <span className="text-sm font-medium text-green-600">{Math.round((managementStats.stablingGeometry.occupied / managementStats.stablingGeometry.capacity) * 100)}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions for Management Panels */}
+      {/* <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {hasPermission('fitness_certificates:write') && (
+            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+              <Shield className="w-6 h-6 text-green-600 mb-2" />
+              <span className="text-sm font-medium text-gray-900">Add Certificate</span>
+            </button>
+          )}
+          {hasPermission('job_cards:write') && (
+            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+              <ClipboardList className="w-6 h-6 text-blue-600 mb-2" />
+              <span className="text-sm font-medium text-gray-900">Create Job Card</span>
+            </button>
+          )}
+          {hasPermission('branding_priorities:write') && (
+            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+              <Tag className="w-6 h-6 text-purple-600 mb-2" />
+              <span className="text-sm font-medium text-gray-900">Add Branding</span>
+            </button>
+          )}
+          {hasPermission('mileage_logs:write') && (
+            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+              <Gauge className="w-6 h-6 text-indigo-600 mb-2" />
+              <span className="text-sm font-medium text-gray-900">Log Mileage</span>
+            </button>
+          )}
+          {hasPermission('cleaning_slots:write') && (
+            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+              <Sparkles className="w-6 h-6 text-pink-600 mb-2" />
+              <span className="text-sm font-medium text-gray-900">Schedule Clean</span>
+            </button>
+          )}
+          {hasPermission('stabling_geometry:write') && (
+            <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+              <Grid3X3 className="w-6 h-6 text-cyan-600 mb-2" />
+              <span className="text-sm font-medium text-gray-900">Assign Bay</span>
+            </button>
+          )}
+        </div>
+      </div> */}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
