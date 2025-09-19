@@ -181,6 +181,50 @@ export interface StablingGeometry {
   updatedAt: Date;
 }
 
+// Supervisor Review Interfaces
+export interface OperationalPlan {
+  id: string;
+  title: string;
+  type: 'Maintenance Schedule' | 'Train Assignment' | 'Route Optimization' | 'Resource Allocation' | 'Emergency Protocol';
+  description: string;
+  proposedBy: string;
+  proposedDate: Date;
+  expectedImplementation: Date;
+  priority: 'High' | 'Medium' | 'Low';
+  estimatedCost?: number;
+  affectedTrains: string[];
+  affectedRoutes: string[];
+  resourceRequirements: string[];
+  riskAssessment: 'Low' | 'Medium' | 'High';
+  status: 'Pending Review' | 'Under Review' | 'Approved' | 'Rejected' | 'Override Applied';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SupervisorReview {
+  id: string;
+  planId: string;
+  reviewerId: string;
+  reviewerName: string;
+  reviewDate: Date;
+  decision: 'Pending' | 'Approved' | 'Rejected' | 'Override';
+  comments: string;
+  suggestedChanges?: string;
+  overrideReason?: string;
+  reviewDuration: number; // in minutes
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ReviewWorkflow {
+  planId: string;
+  currentStage: 'Initial Review' | 'Technical Assessment' | 'Final Approval' | 'Implementation';
+  reviewHistory: SupervisorReview[];
+  nextReviewers: string[];
+  escalationRequired: boolean;
+  deadlineDate: Date;
+}
+
 // User and Authentication Interfaces
 export interface User {
   id: string;
@@ -201,5 +245,6 @@ export interface AuthContext {
   logout: () => void;
   hasPermission: (permission: string) => boolean;
   hasDepartmentAccess: (department: string) => boolean;
+  isAdmin: () => boolean;
   isAuthenticated: boolean;
 }

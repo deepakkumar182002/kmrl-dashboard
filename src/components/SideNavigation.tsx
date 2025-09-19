@@ -15,33 +15,64 @@ import {
   Gauge,
   Sparkles,
   Grid3X3,
+  CheckSquare,
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface NavItem {
   id: string;
   name: string;
   path: string;
   icon: React.ComponentType<{ className?: string }>;
+  adminOnly?: boolean;
+  departmentSpecific?: string[];
 }
 
 const navigationItems: NavItem[] = [
   { id: 'dashboard', name: 'Dashboard', path: '/', icon: Home },
-  { id: 'trains', name: 'Train Induction List', path: '/trains', icon: List },
-  { id: 'parameters', name: 'Parameters', path: '/parameters', icon: Settings },
-  { id: 'alerts', name: 'Conflict Alerts', path: '/alerts', icon: AlertTriangle },
-  { id: 'simulation', name: 'Simulation', path: '/simulation', icon: Play },
-  { id: 'reports', name: 'Reports', path: '/reports', icon: FileText },
-  { id: 'live-map', name: 'Live Train Map', path: '/live-map', icon: Map },
-  { id: 'fitness-certificates', name: 'Fitness Certificates', path: '/fitness-certificates', icon: Shield },
-  { id: 'job-cards', name: 'Job Cards', path: '/job-cards', icon: ClipboardList },
-  { id: 'branding-priorities', name: 'Branding Priorities', path: '/branding-priorities', icon: Tag },
-  { id: 'mileage-logs', name: 'Mileage Logs', path: '/mileage-logs', icon: Gauge },
-  { id: 'cleaning-slots', name: 'Cleaning Slots', path: '/cleaning-slots', icon: Sparkles },
-  { id: 'stabling-geometry', name: 'Stabling Geometry', path: '/stabling-geometry', icon: Grid3X3 },
+  // Admin-only pages
+  { id: 'trains', name: 'Train Induction List', path: '/trains', icon: List, adminOnly: true },
+  { id: 'supervisor-reviews', name: 'Supervisor Reviews', path: '/supervisor-reviews', icon: CheckSquare, adminOnly: true },
+  { id: 'parameters', name: 'Parameters', path: '/parameters', icon: Settings, adminOnly: true },
+  { id: 'alerts', name: 'Conflict Alerts', path: '/alerts', icon: AlertTriangle, adminOnly: true },
+  { id: 'simulation', name: 'Simulation', path: '/simulation', icon: Play, adminOnly: true },
+  { id: 'reports', name: 'Reports', path: '/reports', icon: FileText, adminOnly: true },
+  { id: 'live-map', name: 'Live Train Map', path: '/live-map', icon: Map, adminOnly: true },
+  // Department-specific pages
+  { id: 'fitness-certificates', name: 'Fitness Certificates', path: '/fitness-certificates', icon: Shield, departmentSpecific: ['Maintenance'] },
+  { id: 'job-cards', name: 'Job Cards', path: '/job-cards', icon: ClipboardList, departmentSpecific: ['Maintenance'] },
+  { id: 'branding-priorities', name: 'Branding Priorities', path: '/branding-priorities', icon: Tag, departmentSpecific: ['Marketing'] },
+  { id: 'mileage-logs', name: 'Mileage Logs', path: '/mileage-logs', icon: Gauge, departmentSpecific: ['Operations'] },
+  { id: 'cleaning-slots', name: 'Cleaning Slots', path: '/cleaning-slots', icon: Sparkles, departmentSpecific: ['Cleaning'] },
+  { id: 'stabling-geometry', name: 'Stabling Geometry', path: '/stabling-geometry', icon: Grid3X3, departmentSpecific: ['Depot Control'] },
 ];
 
 const SideNavigation: React.FC = () => {
   const location = useLocation();
+  const { user, isAdmin } = useAuth();
+
+  const getVisibleNavigationItems = () => {
+    if (!user) return [];
+
+    return navigationItems.filter(item => {
+      // Always show dashboard
+      if (item.id === 'dashboard') return true;
+      
+      // Admin-only items
+      if (item.adminOnly) {
+        return isAdmin();
+      }
+      
+      // Department-specific items
+      if (item.departmentSpecific) {
+        return isAdmin() || item.departmentSpecific.includes(user.department);
+      }
+      
+      return true;
+    });
+  };
+
+  const visibleItems = getVisibleNavigationItems();
 
   return (
     <div className="w-64 bg-white shadow-sm border-r border-gray-200 h-full flex flex-col">
@@ -60,8 +91,20 @@ const SideNavigation: React.FC = () => {
 
       {/* Navigation - Scrollable */}
       <div className="flex-1 overflow-y-auto px-6 pb-6">
+        {/* User Department Info */}
+        {user && (
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="text-xs font-medium text-blue-700 uppercase tracking-wide">
+              {isAdmin() ? 'All Access Admin' : user.department}
+            </div>
+            <div className="text-sm text-blue-600 mt-1">
+              {user.username}
+            </div>
+          </div>
+        )}
+
         <nav className="space-y-2">
-          {navigationItems.map((item) => {
+          {visibleItems.map((item) => {
             const isActive = location.pathname === item.path;
             const IconComponent = item.icon;
 

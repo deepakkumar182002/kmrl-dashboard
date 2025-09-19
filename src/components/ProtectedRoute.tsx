@@ -6,6 +6,8 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredPermission?: string;
   requiredDepartment?: string;
+  adminOnly?: boolean;
+  allowedDepartments?: string[];
   fallback?: React.ReactNode;
 }
 
@@ -13,9 +15,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredPermission,
   requiredDepartment,
+  adminOnly = false,
+  allowedDepartments = [],
   fallback
 }) => {
-  const { user, isLoading, isAuthenticated, hasPermission, hasDepartmentAccess } = useAuth();
+  const { user, isLoading, isAuthenticated, hasPermission, hasDepartmentAccess, isAdmin } = useAuth();
 
   if (isLoading) {
     return (
@@ -43,6 +47,52 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           >
             Login
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Check admin-only access
+  if (adminOnly && !isAdmin()) {
+    return fallback || (
+      <div className="min-h-96 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <AlertTriangle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Admin Access Required</h2>
+          <p className="text-gray-600 mb-4">
+            This feature is only available to administrators.
+          </p>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="text-sm text-gray-600">
+              <strong>Your Role:</strong> {user?.role}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">
+              <strong>Your Department:</strong> {user?.department}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check department-specific access (if not admin)
+  if (allowedDepartments.length > 0 && !isAdmin() && user && !allowedDepartments.includes(user.department)) {
+    return fallback || (
+      <div className="min-h-96 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <AlertTriangle className="w-16 h-16 text-orange-400 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Department Access Required</h2>
+          <p className="text-gray-600 mb-4">
+            This feature is restricted to specific departments.
+          </p>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="text-sm text-gray-600">
+              <strong>Allowed Departments:</strong> {allowedDepartments.join(', ')}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">
+              <strong>Your Department:</strong> {user?.department}
+            </p>
+          </div>
         </div>
       </div>
     );

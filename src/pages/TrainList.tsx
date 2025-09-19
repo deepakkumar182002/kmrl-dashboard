@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Download, Eye, AlertCircle, CheckCircle, Clock, Wrench, Upload, Shield, AlertTriangle } from 'lucide-react';
+import { Search, Filter, Download, Eye, AlertCircle, CheckCircle, Clock, Wrench, Shield, AlertTriangle } from 'lucide-react';
 import { allTrains } from '../data/mockData';
 import { Train } from '../types';
 

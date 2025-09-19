@@ -21,20 +21,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Mock authentication - replace with real auth logic
   useEffect(() => {
-    // Simulate loading user from localStorage or API
+    // Simulate loading user from localStorage or API - Default Admin User
     const mockUser: User = {
-      id: '1',
-      username: 'john.doe',
-      email: 'john.doe@kmrl.kerala.gov.in',
+      id: 'admin-001',
+      username: 'admin',
+      email: 'admin@kmrl.kerala.gov.in',
       department: 'Maintenance',
-      role: 'Supervisor',
+      role: 'Admin',
       permissions: [
         'fitness_certificates:read',
         'fitness_certificates:write',
         'job_cards:read',
         'job_cards:write',
+        'branding_priorities:read',
+        'branding_priorities:write',
         'mileage_logs:read',
+        'mileage_logs:write',
         'cleaning_slots:read',
+        'cleaning_slots:write',
+        'stabling_geometry:read',
+        'stabling_geometry:write',
+        'train_management:read',
+        'train_management:write',
+        'supervisor_reviews:read',
+        'supervisor_reviews:write',
+        'all_access:admin'
       ],
       isActive: true,
       createdAt: new Date(),
@@ -51,15 +62,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     // Mock login logic - replace with real authentication
     if (email && password) {
+      const isAdmin = email.includes('admin');
+      
       const mockUser: User = {
-        id: '1',
+        id: isAdmin ? 'admin-001' : 'user-' + Date.now(),
         username: email.split('@')[0],
         email,
-        department: email.includes('marketing') ? 'Marketing' : 
-                   email.includes('operations') ? 'Operations' :
-                   email.includes('cleaning') ? 'Cleaning' :
-                   email.includes('depot') ? 'Depot Control' : 'Maintenance',
-        role: 'Supervisor',
+        department: getDepartmentFromEmail(email),
+        role: isAdmin ? 'Admin' : 'Supervisor',
         permissions: getDepartmentPermissions(email),
         isActive: true,
         createdAt: new Date(),
@@ -86,6 +96,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const hasDepartmentAccess = (department: string): boolean => {
     if (!user) return false;
     return user.department === department || user.role === 'Admin';
+  };
+
+  const isAdmin = (): boolean => {
+    return user?.role === 'Admin';
+  };
+
+  const getDepartmentFromEmail = (email: string): 'Rolling Stock' | 'Signalling' | 'Telecom' | 'Maintenance' | 'Marketing' | 'Operations' | 'Cleaning' | 'Depot Control' => {
+    if (email.includes('marketing')) return 'Marketing';
+    if (email.includes('operations')) return 'Operations';
+    if (email.includes('cleaning')) return 'Cleaning';
+    if (email.includes('depot')) return 'Depot Control';
+    if (email.includes('maintenance')) return 'Maintenance';
+    return 'Maintenance'; // default
   };
 
   const getDepartmentPermissions = (email: string): string[] => {
@@ -130,7 +153,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     // Admin gets all permissions
     if (email.includes('admin')) {
-      basePermissions.push(
+      return [
         'fitness_certificates:read',
         'fitness_certificates:write',
         'job_cards:read',
@@ -142,8 +165,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         'cleaning_slots:read',
         'cleaning_slots:write',
         'stabling_geometry:read',
-        'stabling_geometry:write'
-      );
+        'stabling_geometry:write',
+        'train_management:read',
+        'train_management:write',
+        'supervisor_reviews:read',
+        'supervisor_reviews:write',
+        'parameters:read',
+        'parameters:write',
+        'alerts:read',
+        'alerts:write',
+        'simulation:read',
+        'simulation:write',
+        'reports:read',
+        'reports:write',
+        'live_map:read',
+        'all_access:admin'
+      ];
     }
     
     return basePermissions;
@@ -156,6 +193,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     hasPermission,
     hasDepartmentAccess,
+    isAdmin,
     isAuthenticated: !!user,
   };
 

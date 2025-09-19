@@ -12,6 +12,7 @@ import Alerts from '../pages/Alerts';
 import Simulation from '../pages/Simulation';
 import Reports from '../pages/Reports';
 import LiveMapPage from '../pages/LiveMapPage';
+import SupervisorReviews from '../pages/SupervisorReviews';
 import FitnessCertificatesManagement from '../pages/FitnessCertificatesManagement';
 import JobCardsManagement from '../pages/JobCardsManagement';
 import BrandingPrioritiesManagement from '../pages/BrandingPrioritiesManagement';
@@ -46,18 +47,70 @@ const MainApp: React.FC = () => {
           <div className="p-6">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/trains" element={<TrainList />} />
-              <Route path="/parameters" element={<Parameters />} />
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/simulation" element={<Simulation />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/live-map" element={<LiveMapPage />} />
               
-              {/* Protected Management Routes */}
+              {/* Admin-only routes */}
+              <Route 
+                path="/trains" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <TrainList />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/parameters" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <Parameters />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/alerts" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <Alerts />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/simulation" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <Simulation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/reports" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <Reports />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/live-map" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <LiveMapPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/supervisor-reviews" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <SupervisorReviews />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Department-specific routes */}
               <Route 
                 path="/fitness-certificates" 
                 element={
-                  <ProtectedRoute requiredPermission="fitness_certificates:read">
+                  <ProtectedRoute allowedDepartments={['Maintenance']}>
                     <FitnessCertificatesManagement />
                   </ProtectedRoute>
                 } 
@@ -65,7 +118,7 @@ const MainApp: React.FC = () => {
               <Route 
                 path="/job-cards" 
                 element={
-                  <ProtectedRoute requiredPermission="job_cards:read">
+                  <ProtectedRoute allowedDepartments={['Maintenance']}>
                     <JobCardsManagement />
                   </ProtectedRoute>
                 } 
@@ -73,7 +126,7 @@ const MainApp: React.FC = () => {
               <Route 
                 path="/branding-priorities" 
                 element={
-                  <ProtectedRoute requiredPermission="branding_priorities:read">
+                  <ProtectedRoute allowedDepartments={['Marketing']}>
                     <BrandingPrioritiesManagement />
                   </ProtectedRoute>
                 } 
@@ -81,7 +134,7 @@ const MainApp: React.FC = () => {
               <Route 
                 path="/mileage-logs" 
                 element={
-                  <ProtectedRoute requiredPermission="mileage_logs:read">
+                  <ProtectedRoute allowedDepartments={['Operations']}>
                     <MileageLogsManagement />
                   </ProtectedRoute>
                 } 
@@ -89,7 +142,7 @@ const MainApp: React.FC = () => {
               <Route 
                 path="/cleaning-slots" 
                 element={
-                  <ProtectedRoute requiredPermission="cleaning_slots:read">
+                  <ProtectedRoute allowedDepartments={['Cleaning']}>
                     <CleaningSlotsManagement />
                   </ProtectedRoute>
                 } 
@@ -97,7 +150,7 @@ const MainApp: React.FC = () => {
               <Route 
                 path="/stabling-geometry" 
                 element={
-                  <ProtectedRoute requiredPermission="stabling_geometry:read">
+                  <ProtectedRoute allowedDepartments={['Depot Control']}>
                     <StablingGeometryManagement />
                   </ProtectedRoute>
                 } 
