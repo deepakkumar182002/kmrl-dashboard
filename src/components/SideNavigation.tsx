@@ -55,8 +55,8 @@ const SideNavigation: React.FC = () => {
     if (!user) return [];
 
     return navigationItems.filter(item => {
-      // Always show dashboard
-      if (item.id === 'dashboard') return true;
+      // Show dashboard only for admin users
+      if (item.id === 'dashboard') return isAdmin();
       
       // Admin-only items
       if (item.adminOnly) {
@@ -125,28 +125,30 @@ const SideNavigation: React.FC = () => {
           })}
         </nav>
 
-        {/* Status Summary */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">Quick Status</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Service Ready</span>
-              <span className="font-medium text-success-600">18</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Standby</span>
-              <span className="font-medium text-blue-600">4</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Maintenance</span>
-              <span className="font-medium text-warning-600">2</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Cleaning</span>
-              <span className="font-medium text-purple-600">1</span>
+        {/* Status Summary - Only for Admin */}
+        {isAdmin() && (
+          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Quick Status</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Service Ready</span>
+                <span className="font-medium text-success-600">18</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Standby</span>
+                <span className="font-medium text-blue-600">4</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Maintenance</span>
+                <span className="font-medium text-warning-600">2</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Cleaning</span>
+                <span className="font-medium text-purple-600">1</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

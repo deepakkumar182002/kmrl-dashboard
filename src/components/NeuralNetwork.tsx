@@ -183,8 +183,16 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ isActive = false, classNa
 
     animate();
 
+    // Handle window resize
+    const handleResize = () => {
+      resizeCanvas();
+    };
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
       cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', handleResize);
     };
   }, [isActive]);
 

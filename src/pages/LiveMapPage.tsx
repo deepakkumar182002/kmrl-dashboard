@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   MapPin, 
   Clock, 
-  Train as TrainIcon, 
   ArrowRight, 
   Navigation,
   RefreshCw
@@ -28,74 +27,7 @@ const LiveMapPage: React.FC = () => {
   const [selectedRoute, setSelectedRoute] = useState<string[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [activeTrains, setActiveTrains] = useState<TrainSchedule[]>([
-    {
-      id: 'T001',
-      trainNumber: 'KMRL-001',
-      currentStation: 'Aluva',
-      nextStation: 'Pulinchodu',
-      departureTime: '14:35',
-      arrivalTime: '14:37',
-      delay: 0,
-      direction: 'Southbound',
-      status: 'On Time'
-    },
-    {
-      id: 'T002',
-      trainNumber: 'KMRL-002',
-      currentStation: 'M.G Road',
-      nextStation: 'Maharajas College',
-      departureTime: '14:40',
-      arrivalTime: '14:42',
-      delay: 2,
-      direction: 'Southbound',
-      status: 'Delayed'
-    },
-    {
-      id: 'T003',
-      trainNumber: 'KMRL-003',
-      currentStation: 'Thrippunithura',
-      nextStation: 'SN Junction',
-      departureTime: '14:38',
-      arrivalTime: '14:40',
-      delay: 0,
-      direction: 'Northbound',
-      status: 'At Station'
-    },
-    {
-      id: 'T004',
-      trainNumber: 'KMRL-004',
-      currentStation: 'Edapally',
-      nextStation: 'Changampuzha Park',
-      departureTime: '14:44',
-      arrivalTime: '14:46',
-      delay: 0,
-      direction: 'Southbound',
-      status: 'On Time'
-    },
-    {
-      id: 'T005',
-      trainNumber: 'KMRL-005',
-      currentStation: 'Kaloor',
-      nextStation: 'Town Hall',
-      departureTime: '14:41',
-      arrivalTime: '14:43',
-      delay: 1,
-      direction: 'Southbound',
-      status: 'Delayed'
-    },
-    {
-      id: 'T006',
-      trainNumber: 'KMRL-006',
-      currentStation: 'Lissie Junction',
-      nextStation: 'M.G Road',
-      departureTime: '14:39',
-      arrivalTime: '14:41',
-      delay: 0,
-      direction: 'Northbound',
-      status: 'On Time'
-    }
-  ]);
+  const [activeTrains] = useState<TrainSchedule[]>([]);
 
   // Update time every minute
   useEffect(() => {
@@ -162,55 +94,10 @@ const LiveMapPage: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-      
-      // Simulate train movements every 30 seconds
-      setActiveTrains(prevTrains => 
-        prevTrains.map(train => {
-          const stationNames = kochiMetroStations.map(s => s.name);
-          const currentIndex = stationNames.indexOf(train.currentStation);
-          
-          // Move train to next station occasionally
-          if (Math.random() < 0.3 && currentIndex < stationNames.length - 1) {
-            const nextIndex = train.direction === 'Southbound' 
-              ? currentIndex + 1 
-              : Math.max(0, currentIndex - 1);
-              
-            if (nextIndex >= 0 && nextIndex < stationNames.length) {
-              const newCurrentStation = stationNames[nextIndex];
-              const newNextStation = train.direction === 'Southbound'
-                ? stationNames[nextIndex + 1] || 'End of Line'
-                : stationNames[nextIndex - 1] || 'End of Line';
-                
-              return {
-                ...train,
-                currentStation: newCurrentStation,
-                nextStation: newNextStation,
-                status: Math.random() < 0.1 ? 'Delayed' : 'On Time' as any
-              };
-            }
-          }
-          
-          return train;
-        })
-      );
     }, 30000); // Update every 30 seconds
 
     return () => clearInterval(interval);
   }, []);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'On Time': return 'text-green-600 bg-green-100';
-      case 'Delayed': return 'text-red-600 bg-red-100';
-      case 'At Station': return 'text-blue-600 bg-blue-100';
-      case 'Departed': return 'text-gray-600 bg-gray-100';
-      default: return 'text-gray-600 bg-gray-100';
-    }
-  };
-
-  const getDirectionColor = (direction: string) => {
-    return direction === 'Northbound' ? 'text-purple-600' : 'text-orange-600';
-  };
 
   return (
     <div className="h-full space-y-4">
@@ -329,10 +216,9 @@ const LiveMapPage: React.FC = () => {
         )}
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-[calc(100vh-300px)]">
-        {/* Map Section */}
-        <div className="lg:col-span-3 bg-white rounded-lg shadow-sm border overflow-hidden">
+      {/* Full Width Map */}
+      <div className="h-[calc(100vh-300px)]">
+        <div className="bg-white rounded-lg shadow-sm border overflow-hidden h-full">
           <div className="h-full relative">
             <LiveMap 
               showHeader={false} 
@@ -341,153 +227,6 @@ const LiveMapPage: React.FC = () => {
               toStation={toStation}
               activeTrains={activeTrains}
             />
-            
-            {/* Map Legend - Better Positioned and Organized */}
-            <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-xl border border-gray-200 z-[1000] min-w-[240px]">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-bold text-gray-900 flex items-center">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
-                  Live Map Legend
-                </h4>
-                <div className="text-xs text-gray-500">
-                  {activeTrains.length} active
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                {/* Live Trains */}
-                <div className="space-y-2">
-                  <div className="text-xs font-semibold text-gray-700 border-b border-gray-200 pb-1">Live Trains</div>
-                  <div className="flex items-center space-x-2">
-                    <div className="relative">
-                      <div className="w-6 h-4 bg-gradient-to-r from-purple-500 to-orange-500 rounded-lg border border-white shadow-sm"></div>
-                      <div className="absolute -top-1 -right-1 text-xs">🚇</div>
-                    </div>
-                    <span className="text-xs">Live Running Trains</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full border border-white animate-pulse"></div>
-                    <span className="text-xs">On Time</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full border border-white"></div>
-                    <span className="text-xs">Delayed</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full border border-white"></div>
-                    <span className="text-xs">At Station</span>
-                  </div>
-                </div>
-
-                {/* Route & Stations */}
-                <div className="space-y-2">
-                  <div className="text-xs font-semibold text-gray-700 border-b border-gray-200 pb-1">Route & Stations</div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-1 bg-red-600 rounded" style={{clipPath: 'polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%)'}}></div>
-                    <span className="text-xs">Selected Route</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-600 rounded border-2 border-yellow-400"></div>
-                    <span className="text-xs">Metro Stations</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-2 bg-blue-600 rounded"></div>
-                    <span className="text-xs">Metro Line</span>
-                  </div>
-                </div>
-
-                {/* Depot Trains */}
-                <div className="space-y-2">
-                  <div className="text-xs font-semibold text-gray-700 border-b border-gray-200 pb-1">Depot Trains</div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-600 rounded-full border border-white"></div>
-                    <span className="text-xs">Ready</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full border border-white"></div>
-                    <span className="text-xs">Standby</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-red-600 rounded-full border border-white"></div>
-                    <span className="text-xs">Maintenance</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Schedule Section */}
-        <div className="bg-white rounded-lg shadow-sm border p-4 overflow-hidden">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              <TrainIcon className="w-5 h-5 mr-2 text-blue-600" />
-              Live Schedule
-            </h3>
-            <button className="p-1 hover:bg-gray-100 rounded">
-              <RefreshCw className="w-4 h-4 text-gray-600" />
-            </button>
-          </div>
-
-          <div className="space-y-3 overflow-y-auto max-h-[calc(100vh-400px)]">
-            {activeTrains.map((train) => (
-              <div key={train.id} className="border border-gray-200 rounded-lg p-3 hover:border-blue-300 transition-colors">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-gray-900">{train.trainNumber}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(train.status)}`}>
-                    {train.status}
-                  </span>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Current:</span>
-                    <span className="font-medium">{train.currentStation}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Next:</span>
-                    <span className="font-medium">{train.nextStation}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Departure:</span>
-                    <span className="font-medium">{train.departureTime}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Direction:</span>
-                    <span className={`font-medium ${getDirectionColor(train.direction)}`}>
-                      {train.direction}
-                    </span>
-                  </div>
-                  
-                  {train.delay > 0 && (
-                    <div className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">
-                      Delayed by {train.delay} minutes
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Operating Hours Info */}
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="text-xs text-gray-500 space-y-1">
-              <div className="flex items-center justify-between">
-                <span>Operating Hours:</span>
-                <span className="font-medium">6:00 AM - 10:30 PM</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Peak Frequency:</span>
-                <span className="font-medium">Every 7 minutes</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Fare Range:</span>
-                <span className="font-medium">₹10 - ₹60</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

@@ -177,66 +177,6 @@ const createDepotIcon = () => {
   });
 };
 
-// Live train marker icon with animation
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const createLiveTrainIcon = (direction: 'Northbound' | 'Southbound', status: string) => {
-  const directionColor = direction === 'Northbound' ? '#8b5cf6' : '#f97316'; // purple for north, orange for south
-  const statusColor = status === 'On Time' ? '#10b981' : status === 'Delayed' ? '#ef4444' : '#3b82f6';
-  
-  return L.divIcon({
-    className: 'live-train-marker',
-    html: `
-      <div style="
-        position: relative;
-        width: 32px;
-        height: 20px;
-      ">
-        <div style="
-          background: linear-gradient(45deg, ${directionColor}, ${statusColor});
-          border: 2px solid white;
-          border-radius: 12px;
-          width: 32px;
-          height: 20px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          animation: trainPulse 2s infinite;
-        ">
-          <div style="
-            background-color: white;
-            border-radius: 8px;
-            width: 20px;
-            height: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: bold;
-            color: ${directionColor};
-          ">🚇</div>
-        </div>
-        <div style="
-          position: absolute;
-          top: -8px;
-          left: 50%;
-          transform: translateX(-50%);
-          background-color: ${directionColor};
-          color: white;
-          padding: 1px 4px;
-          border-radius: 8px;
-          font-size: 8px;
-          font-weight: bold;
-          white-space: nowrap;
-        ">${direction.charAt(0)}</div>
-      </div>
-    `,
-    iconSize: [32, 20],
-    iconAnchor: [16, 10],
-    popupAnchor: [0, -10]
-  });
-};
-
 interface MapControllerProps {
   center: [number, number];
   zoom: number;
@@ -676,74 +616,7 @@ const LiveMap: React.FC<LiveMapProps> = ({
             </Marker>
           ))}
 
-          {/* Live Active Trains on Track */}
-          {activeTrains.map((train) => {
-            const station = kochiMetroStations.find(s => s.name === train.currentStation);
-            if (!station) return null;
-            
-            return (
-              <Marker
-                key={`live-${train.id}`}
-                position={[station.coordinates.lat, station.coordinates.lng]}
-                icon={createLiveTrainIcon(train.direction, train.status)}
-              >
-                <Popup>
-                  <div className="p-3 min-w-72">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2">
-                        <div className="text-2xl">🚇</div>
-                        <div>
-                          <h3 className="font-bold text-lg text-blue-600">{train.trainNumber}</h3>
-                          <div className="text-sm text-gray-500">Live Train</div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          train.status === 'On Time' ? 'bg-green-100 text-green-800' :
-                          train.status === 'Delayed' ? 'bg-red-100 text-red-800' :
-                          train.status === 'At Station' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {train.status}
-                        </span>
-                        <div className={`text-xs mt-1 font-medium ${
-                          train.direction === 'Northbound' ? 'text-purple-600' : 'text-orange-600'
-                        }`}>
-                          {train.direction}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Current Station:</span>
-                        <span className="font-semibold text-blue-600">{train.currentStation}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Next Station:</span>
-                        <span className="font-semibold">{train.nextStation}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Direction:</span>
-                        <span className={`font-semibold ${
-                          train.direction === 'Northbound' ? 'text-purple-600' : 'text-orange-600'
-                        }`}>
-                          {train.direction}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-3 pt-2 border-t bg-gray-50 -mx-3 -mb-3 px-3 pb-3 rounded-b">
-                      <div className="text-xs text-gray-600 flex items-center justify-between">
-                        <span>🔴 Live Tracking Active</span>
-                        <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      </div>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+
 
           {/* Depot Trains */}
           {filteredTrains.map((train) => (
@@ -790,7 +663,7 @@ const LiveMap: React.FC<LiveMapProps> = ({
 
         {/* Legend */}
         {showLegend && (
-          <div className="absolute top-4 right-4 bg-white p-4 rounded-lg shadow-lg border z-10 max-w-xs">
+          <div className="absolute top-0 right-4 bg-white p-4 rounded-lg shadow-lg border z-10 max-w-xs">
             <h4 className="font-semibold mb-3 text-sm">Map Legend</h4>
             
             {/* Train Status */}

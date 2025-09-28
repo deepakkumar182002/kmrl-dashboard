@@ -156,6 +156,17 @@ body {
   }
 }
 
+@keyframes trainPulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.6);
+    transform: scale(1.1);
+  }
+}
+
 .live-train-marker {
   animation: trainPulse 2s infinite, trainMoving 1s infinite;
 }
