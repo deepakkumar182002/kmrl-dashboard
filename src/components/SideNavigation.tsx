@@ -30,9 +30,9 @@ interface NavItem {
 
 const navigationItems: NavItem[] = [
   { id: 'dashboard', name: 'Dashboard', path: '/', icon: Home },
+  { id: 'supervisor-reviews', name: 'Supervisor Reviews', path: '/supervisor-reviews', icon: CheckSquare, adminOnly: true },
   // Admin-only pages
   { id: 'trains', name: 'Train Induction List', path: '/trains', icon: List, adminOnly: true },
-  { id: 'supervisor-reviews', name: 'Supervisor Reviews', path: '/supervisor-reviews', icon: CheckSquare, adminOnly: true },
   { id: 'parameters', name: 'Parameters', path: '/parameters', icon: Settings, adminOnly: true },
   { id: 'alerts', name: 'Conflict Alerts', path: '/alerts', icon: AlertTriangle, adminOnly: true },
   { id: 'simulation', name: 'Simulation', path: '/simulation', icon: Play, adminOnly: true },

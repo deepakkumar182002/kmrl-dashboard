@@ -21,7 +21,7 @@ interface AIEngineProps {
 
 const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) => {
   const [aiData, setAIData] = useState<AIEngineData>({
-    confidence: 87,
+    confidence: 97.5,
     processingActive: true,
     suggestions: [],
     predictions: [],
@@ -29,12 +29,12 @@ const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) 
     smartSchedule: [],
     lastUpdate: new Date(),
     dataFlow: {
-      fitness: { status: 'active', lastSync: new Date(), dataPoints: 145 },
-      jobCards: { status: 'active', lastSync: new Date(), dataPoints: 89 },
-      branding: { status: 'active', lastSync: new Date(), dataPoints: 67 },
-      mileage: { status: 'active', lastSync: new Date(), dataPoints: 234 },
-      cleaning: { status: 'active', lastSync: new Date(), dataPoints: 156 },
-      stabling: { status: 'active', lastSync: new Date(), dataPoints: 78 }
+      fitness: { status: 'active', lastSync: new Date(), dataPoints: 28 }, // Total fitness certificates
+      jobCards: { status: 'active', lastSync: new Date(), dataPoints: 52 }, // Total job cards
+      branding: { status: 'active', lastSync: new Date(), dataPoints: 22 }, // Total branding priorities
+      mileage: { status: 'active', lastSync: new Date(), dataPoints: 184 }, // Total mileage logs
+      cleaning: { status: 'active', lastSync: new Date(), dataPoints: 28 }, // Total cleaning slots
+      stabling: { status: 'active', lastSync: new Date(), dataPoints: 36 } // Total stabling geometry
     }
   });
 
@@ -44,27 +44,27 @@ const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) 
       {
         id: '1',
         type: 'suggestion',
-        title: 'Optimize Train 102 Schedule',
-        description: 'Based on fitness expiry patterns, advance maintenance by 2 days to prevent service disruption.',
-        confidence: 92,
+        title: 'Address 5 Expiring Fitness Certificates',
+        description: '5 fitness certificates expiring soon need immediate attention to maintain 23/28 active ratio.',
+        confidence: 98,
         priority: 'high',
-        action: 'Schedule early maintenance',
-        trainId: 'T102',
+        action: 'Schedule fitness renewals',
+        trainId: 'Multiple',
         department: 'Fitness',
         timestamp: new Date(),
-        data: { savings: '4 hours downtime' }
+        data: { impact: '5 trains at risk' }
       },
       {
         id: '2',
         type: 'suggestion',
-        title: 'Cleaning Slot Reallocation',
-        description: 'Move 3 trains to off-peak cleaning slots to improve efficiency by 15%.',
-        confidence: 85,
+        title: 'Optimize 16 Pending Mileage Verifications',
+        description: 'Process 16 pending mileage logs to improve verification efficiency from 91% to 95%.',
+        confidence: 96,
         priority: 'medium',
-        action: 'Reschedule cleaning',
-        department: 'Cleaning',
+        action: 'Verify pending logs',
+        department: 'Mileage',
         timestamp: new Date(),
-        data: { efficiency: '+15%' }
+        data: { efficiency: '+4% improvement' }
       }
     ];
 
@@ -73,7 +73,7 @@ const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) 
         id: '1',
         trainId: 'T102',
         predictedInductionTime: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-        confidence: 89,
+        confidence: 97,
         steps: [
           {
             id: '1',
@@ -82,7 +82,7 @@ const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) 
             estimatedDuration: 15,
             dependencies: [],
             status: 'completed',
-            confidence: 95
+            confidence: 99
           },
           {
             id: '2',
@@ -91,7 +91,7 @@ const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) 
             estimatedDuration: 45,
             dependencies: ['1'],
             status: 'in-progress',
-            confidence: 88
+            confidence: 95
           }
         ],
         totalDuration: 120,
@@ -104,15 +104,15 @@ const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) 
       {
         id: '1',
         type: 'anomaly',
-        title: 'Unusual Mileage Pattern',
-        description: 'Train T105 showing 23% higher mileage than expected route pattern.',
-        confidence: 78,
-        priority: 'medium',
-        action: 'Investigate route deviation',
-        trainId: 'T105',
-        department: 'Mileage',
+        title: 'Stabling Capacity Near Maximum',
+        description: 'Current stabling occupancy at 32/36 (89%) - approaching full capacity threshold.',
+        confidence: 94,
+        priority: 'high',
+        action: 'Plan capacity expansion',
+        trainId: 'System-wide',
+        department: 'Stabling',
         timestamp: new Date(),
-        data: { deviation: '+23%' }
+        data: { occupancy: '89%' }
       }
     ];
 
@@ -124,11 +124,11 @@ const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) 
       smartSchedule: mockPredictions
     }));
 
-    // Simulate real-time confidence updates
+    // Simulate real-time confidence updates (95-100% range)
     const interval = setInterval(() => {
       setAIData(prev => ({
         ...prev,
-        confidence: Math.max(75, Math.min(95, prev.confidence + (Math.random() - 0.5) * 4)),
+        confidence: Math.max(95, Math.min(100, 95 + Math.random() * 5)), // Random between 95-100%
         lastUpdate: new Date()
       }));
     }, 5000);
@@ -137,9 +137,10 @@ const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) 
   }, []);
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 90) return 'text-green-600 bg-green-100';
-    if (confidence >= 80) return 'text-blue-600 bg-blue-100';
-    if (confidence >= 70) return 'text-yellow-600 bg-yellow-100';
+    if (confidence >= 98) return 'text-emerald-600 bg-emerald-100';
+    if (confidence >= 95) return 'text-green-600 bg-green-100';
+    if (confidence >= 90) return 'text-blue-600 bg-blue-100';
+    if (confidence >= 80) return 'text-yellow-600 bg-yellow-100';
     return 'text-red-600 bg-red-100';
   };
 
@@ -344,9 +345,10 @@ const AIEngine: React.FC<AIEngineProps> = ({ onSimulationStart, isSimulating }) 
           <div className="w-full bg-gray-200 rounded-full h-4 ai-border-glow">
             <div 
               className={`h-4 rounded-full transition-all duration-1000 confidence-pulse ${
-                aiData.confidence >= 90 ? 'bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-400/50' :
-                aiData.confidence >= 80 ? 'bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg shadow-blue-400/50' :
-                aiData.confidence >= 70 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-400/50' :
+                aiData.confidence >= 98 ? 'bg-gradient-to-r from-emerald-400 via-green-500 to-emerald-600 shadow-lg shadow-emerald-400/60' :
+                aiData.confidence >= 95 ? 'bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-400/50' :
+                aiData.confidence >= 90 ? 'bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg shadow-blue-400/50' :
+                aiData.confidence >= 80 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-400/50' :
                 'bg-gradient-to-r from-red-400 to-red-600 shadow-lg shadow-red-400/50'
               }`}
               style={{ width: `${aiData.confidence}%` }}

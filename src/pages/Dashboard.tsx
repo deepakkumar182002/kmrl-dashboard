@@ -19,45 +19,45 @@ const Dashboard: React.FC = () => {
     cleaning: allTrains.filter(t => t.status === 'Cleaning').length,
   };
 
-  // Mock management panel data - replace with real data
+  // Synchronized management panel data - matches AI Engine simulation
   const managementStats = {
     fitnessCertificates: {
-      total: 25,
-      expiringSoon: 3,
-      fit: 22,
-      notFit: 3
+      total: 28,
+      expiringSoon: 5,
+      fit: 23,
+      notFit: 5
     },
     jobCards: {
-      total: 45,
-      open: 12,
-      inProgress: 8,
-      closed: 25,
-      overdue: 4
+      total: 52,
+      open: 14,
+      inProgress: 12,
+      closed: 26,
+      overdue: 6
     },
     brandingPriorities: {
-      total: 18,
-      active: 14,
-      completed: 3,
+      total: 22,
+      active: 16,
+      completed: 5,
       pending: 1,
-      totalValue: 2500000
+      totalValue: 3200000
     },
     mileageLogs: {
-      total: 156,
-      verified: 145,
-      pending: 11,
-      avgDailyKm: 285
+      total: 184,
+      verified: 168,
+      pending: 16,
+      avgDailyKm: 312
     },
     cleaningSlots: {
-      total: 24,
-      occupied: 18,
+      total: 28,
+      occupied: 22,
       available: 6,
-      maintenance: 2
+      maintenance: 4
     },
     stablingGeometry: {
-      total: 32,
-      occupied: 28,
+      total: 36,
+      occupied: 32,
       available: 4,
-      capacity: 35
+      capacity: 38
     }
   };
 
@@ -89,6 +89,12 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+
+      {/* AI Engine Panel */}
+      <AIEngine 
+        onSimulationStart={() => setIsSimulating(true)}
+        isSimulating={isSimulating}
+      />
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -340,7 +346,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Quick Actions for Management Panels */}
+      Quick Actions for Management Panels
       {/* <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -377,20 +383,16 @@ const Dashboard: React.FC = () => {
           {hasPermission('stabling_geometry:write') && (
             <button className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
               <Grid3X3 className="w-6 h-6 text-cyan-600 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Assign Bay</span>
-            </button>
-          )}
-        </div>
-      </div> */}
+                <span className="text-sm font-medium text-gray-900">Assign Bay</span>
+              </button>
+            )}
+          </div>
+        </div> */}
 
-      {/* Charts Row */}
-      
+        {/* Charts Row */}
+        
 
-      {/* AI Engine Panel */}
-      <AIEngine 
-        onSimulationStart={() => setIsSimulating(true)}
-        isSimulating={isSimulating}
-      />
+    
 
       {/* Enhanced Depot Map */}
       <EnhancedDepotMap />

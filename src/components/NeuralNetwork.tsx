@@ -15,22 +15,41 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ isActive = false, classNa
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    const resizeCanvas = () => {
+      // Set canvas size
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
 
-    // Network structure
+    resizeCanvas();
+
+    // Calculate center positioning for network
+    const networkWidth = Math.min(400, canvas.width * 0.8);
+    const startX = (canvas.width - networkWidth) / 2;
+    const layerSpacing = networkWidth / 3;
+
+    // Network structure with labels - centered
     const layers = [
-      { nodes: 6, x: 50, color: '#3b82f6' },   // Input layer (departments)
-      { nodes: 8, x: 150, color: '#8b5cf6' },  // Hidden layer 1
-      { nodes: 6, x: 250, color: '#a855f7' },  // Hidden layer 2
-      { nodes: 4, x: 350, color: '#22c55e' }   // Output layer
+      { 
+        nodes: 6, 
+        x: startX, 
+        color: '#3b82f6',
+        labels: ['Fitness Data', 'Job Cards', 'Branding', 'Mileage', 'Cleaning', 'Stabling']
+      },
+      { nodes: 8, x: startX + layerSpacing, color: '#8b5cf6', labels: [] },  // Hidden layer 1
+      { nodes: 6, x: startX + layerSpacing * 2, color: '#a855f7', labels: [] },  // Hidden layer 2
+      { 
+        nodes: 4, 
+        x: startX + layerSpacing * 3, 
+        color: '#22c55e',
+        labels: ['Induction Plan', 'Schedule Opt', 'Anomaly Alert', 'Efficiency']
+      }
     ];
 
-    const nodes: Array<{ x: number; y: number; layer: number; active: boolean }> = [];
+    const nodes: Array<{ x: number; y: number; layer: number; active: boolean; label?: string; color?: string }> = [];
     const connections: Array<{ from: any; to: any; strength: number; active: boolean }> = [];
 
-    // Create nodes
+    // Create nodes with labels
     layers.forEach((layer, layerIndex) => {
       const nodeSpacing = (canvas.height - 40) / (layer.nodes + 1);
       for (let i = 0; i < layer.nodes; i++) {
@@ -38,7 +57,9 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ isActive = false, classNa
           x: layer.x,
           y: 20 + nodeSpacing * (i + 1),
           layer: layerIndex,
-          active: false
+          active: false,
+          label: layer.labels[i] || '',
+          color: layer.color
         });
       }
     });
@@ -71,10 +92,11 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ isActive = false, classNa
       if (isActive) {
         frame++;
         
-        // Activate connections in waves
+        // Activate connections in waves with data flow visualization
         connections.forEach((conn, index) => {
-          const wavePosition = (frame * 2) % (connections.length + 50);
-          conn.active = index < wavePosition && index > wavePosition - 20;
+          const wavePosition = (frame * 3) % (connections.length + 60);
+          const layerDelay = conn.from.layer * 20; // Delay based on layer
+          conn.active = index < wavePosition - layerDelay && index > wavePosition - layerDelay - 15;
         });
 
         // Activate nodes based on connections
@@ -103,6 +125,24 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ isActive = false, classNa
         ctx.strokeStyle = gradient;
         ctx.lineWidth = width;
         ctx.stroke();
+
+        // Draw data flow particles for active connections
+        if (isActive && conn.active) {
+          const particleProgress = (frame * 0.05) % 1;
+          const particleX = conn.from.x + (conn.to.x - conn.from.x) * particleProgress;
+          const particleY = conn.from.y + (conn.to.y - conn.from.y) * particleProgress;
+          
+          ctx.beginPath();
+          ctx.arc(particleX, particleY, 3, 0, 2 * Math.PI);
+          ctx.fillStyle = '#fbbf24';
+          ctx.fill();
+          
+          // Glowing effect
+          ctx.beginPath();
+          ctx.arc(particleX, particleY, 6, 0, 2 * Math.PI);
+          ctx.fillStyle = 'rgba(251, 191, 36, 0.3)';
+          ctx.fill();
+        }
       });
 
       // Draw nodes
@@ -124,6 +164,17 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ isActive = false, classNa
           ctx.arc(node.x, node.y, radius + 3, 0, 2 * Math.PI);
           ctx.fillStyle = layer.color + '40';
           ctx.fill();
+        }
+
+        // Draw labels for input and output layers
+        if (node.label && (node.layer === 0 || node.layer === layers.length - 1)) {
+          ctx.font = '10px Arial';
+          ctx.textAlign = node.layer === 0 ? 'right' : 'left';
+          ctx.fillStyle = isActive && node.active ? '#1f2937' : '#6b7280';
+          
+          const textOffset = 20;
+          const textX = node.layer === 0 ? node.x - textOffset : node.x + textOffset;
+          ctx.fillText(node.label, textX, node.y + 3);
         }
       });
 
@@ -147,10 +198,10 @@ const NeuralNetwork: React.FC<NeuralNetworkProps> = ({ isActive = false, classNa
       
       {/* Layer Labels */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
+        <div className="absolute top-1/2 transform -translate-y-1/2 text-xs text-gray-500" style={{ left: 'calc(50% - 180px)' }}>
           <div className="writing-mode-vertical text-center">Input</div>
         </div>
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
+        <div className="absolute top-1/2 transform -translate-y-1/2 text-xs text-gray-500" style={{ right: 'calc(50% - 180px)' }}>
           <div className="writing-mode-vertical text-center">Output</div>
         </div>
       </div>
