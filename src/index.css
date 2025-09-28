@@ -156,34 +156,8 @@ body {
   }
 }
 
-@keyframes trainMove {
-  0%, 100% {
-    transform: translateY(-1px) scale(1);
-  }
-  50% {
-    transform: translateY(1px) scale(1.05);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
-  }
-}
-
 .live-train-marker {
   animation: trainPulse 2s infinite, trainMoving 1s infinite;
-  transition: all 0.5s ease-in-out;
-}
-
-.live-train-marker:hover {
-  transform: scale(1.2);
-  z-index: 1000;
 }
 
 .metro-line-glow {

@@ -20,24 +20,6 @@ export interface Train {
   rakeNumber: string;
 }
 
-export interface ActiveTrain {
-  id: string;
-  trainNumber: string;
-  currentStation: string;
-  nextStation: string;
-  direction: 'Northbound' | 'Southbound';
-  status: 'Active' | 'Scheduled' | 'Delayed' | 'At Station';
-  speed: number; // km/h
-  eta: string; // estimated time of arrival at next station
-  route: string[];
-  progress: number; // 0-1 progress between current and next station
-  lastUpdated: Date;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
-}
-
 export interface DepotBay {
   id: string;
   number: number;

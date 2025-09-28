@@ -339,9 +339,81 @@ const LiveMapPage: React.FC = () => {
               selectedRoute={selectedRoute}
               fromStation={fromStation}
               toStation={toStation}
+              activeTrains={activeTrains}
             />
             
+            {/* Map Legend - Better Positioned and Organized */}
+            <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-xl border border-gray-200 z-[1000] min-w-[240px]">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-bold text-gray-900 flex items-center">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
+                  Live Map Legend
+                </h4>
+                <div className="text-xs text-gray-500">
+                  {activeTrains.length} active
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                {/* Live Trains */}
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold text-gray-700 border-b border-gray-200 pb-1">Live Trains</div>
+                  <div className="flex items-center space-x-2">
+                    <div className="relative">
+                      <div className="w-6 h-4 bg-gradient-to-r from-purple-500 to-orange-500 rounded-lg border border-white shadow-sm"></div>
+                      <div className="absolute -top-1 -right-1 text-xs">🚇</div>
+                    </div>
+                    <span className="text-xs">Live Running Trains</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full border border-white animate-pulse"></div>
+                    <span className="text-xs">On Time</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full border border-white"></div>
+                    <span className="text-xs">Delayed</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full border border-white"></div>
+                    <span className="text-xs">At Station</span>
+                  </div>
+                </div>
 
+                {/* Route & Stations */}
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold text-gray-700 border-b border-gray-200 pb-1">Route & Stations</div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-1 bg-red-600 rounded" style={{clipPath: 'polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%)'}}></div>
+                    <span className="text-xs">Selected Route</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-600 rounded border-2 border-yellow-400"></div>
+                    <span className="text-xs">Metro Stations</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-2 bg-blue-600 rounded"></div>
+                    <span className="text-xs">Metro Line</span>
+                  </div>
+                </div>
+
+                {/* Depot Trains */}
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold text-gray-700 border-b border-gray-200 pb-1">Depot Trains</div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-600 rounded-full border border-white"></div>
+                    <span className="text-xs">Ready</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full border border-white"></div>
+                    <span className="text-xs">Standby</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-600 rounded-full border border-white"></div>
+                    <span className="text-xs">Maintenance</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
