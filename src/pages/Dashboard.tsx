@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Train, Clock, Wrench, Sparkles, Shield, ClipboardList, Tag, Gauge, Grid3X3 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { allTrains } from '../data/mockData';
 import EnhancedDepotMap from '../components/EnhancedDepotMap';
 import AnalyticsDashboard from '../components/AnalyticsDashboard';
+import AIEngine from '../components/AIEngine';
+import AISimulation from '../components/AISimulation';
 
 const Dashboard: React.FC = () => {
+  const [isSimulating, setIsSimulating] = useState(false);
   
   // Calculate statistics
   const trainCounts = {
@@ -381,6 +384,16 @@ const Dashboard: React.FC = () => {
       </div> */}
 
       {/* Charts Row */}
+      
+
+      {/* AI Engine Panel */}
+      <AIEngine 
+        onSimulationStart={() => setIsSimulating(true)}
+        isSimulating={isSimulating}
+      />
+
+      {/* Enhanced Depot Map */}
+      <EnhancedDepotMap />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Train Status Distribution */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -424,12 +437,15 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Enhanced Depot Map */}
-      <EnhancedDepotMap />
-
       {/* Advanced Analytics */}
       <AnalyticsDashboard />
+
+      {/* AI Simulation Modal */}
+      <AISimulation 
+        isActive={isSimulating}
+        onComplete={() => setIsSimulating(false)}
+        onReset={() => setIsSimulating(false)}
+      />
     </div>
   );
 };

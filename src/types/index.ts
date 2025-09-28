@@ -20,6 +20,24 @@ export interface Train {
   rakeNumber: string;
 }
 
+export interface ActiveTrain {
+  id: string;
+  trainNumber: string;
+  currentStation: string;
+  nextStation: string;
+  direction: 'Northbound' | 'Southbound';
+  status: 'Active' | 'Scheduled' | 'Delayed' | 'At Station';
+  speed: number; // km/h
+  eta: string; // estimated time of arrival at next station
+  route: string[];
+  progress: number; // 0-1 progress between current and next station
+  lastUpdated: Date;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
+
 export interface DepotBay {
   id: string;
   number: number;
@@ -46,6 +64,72 @@ export interface Parameter {
   value: string | number;
   description: string;
   lastUpdated: Date;
+}
+
+// AI Engine Types
+export interface AIInsight {
+  id: string;
+  type: 'suggestion' | 'prediction' | 'anomaly' | 'optimization';
+  title: string;
+  description: string;
+  confidence: number; // 0-100
+  priority: 'high' | 'medium' | 'low';
+  action: string;
+  trainId?: string;
+  department: string;
+  timestamp: Date;
+  data: any;
+}
+
+export interface AIInductionPlan {
+  id: string;
+  trainId: string;
+  predictedInductionTime: Date;
+  confidence: number;
+  steps: AIInductionStep[];
+  totalDuration: number; // in minutes
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  generatedAt: Date;
+}
+
+export interface AIInductionStep {
+  id: string;
+  department: string;
+  task: string;
+  estimatedDuration: number; // in minutes
+  dependencies: string[];
+  status: 'pending' | 'in-progress' | 'completed' | 'blocked';
+  confidence: number;
+}
+
+export interface AIChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  context?: {
+    trainId?: string;
+    department?: string;
+    query_type?: 'induction_time' | 'status' | 'optimization' | 'general';
+  };
+}
+
+export interface AIEngineData {
+  confidence: number;
+  processingActive: boolean;
+  suggestions: AIInsight[];
+  predictions: AIInductionPlan[];
+  anomalies: AIInsight[];
+  smartSchedule: AIInductionPlan[];
+  lastUpdate: Date;
+  dataFlow: {
+    fitness: { status: string; lastSync: Date; dataPoints: number };
+    jobCards: { status: string; lastSync: Date; dataPoints: number };
+    branding: { status: string; lastSync: Date; dataPoints: number };
+    mileage: { status: string; lastSync: Date; dataPoints: number };
+    cleaning: { status: string; lastSync: Date; dataPoints: number };
+    stabling: { status: string; lastSync: Date; dataPoints: number };
+  };
 }
 
 export interface Report {

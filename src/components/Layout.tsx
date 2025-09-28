@@ -5,6 +5,7 @@ import TopNavigation from './TopNavigation';
 import SideNavigation from './SideNavigation';
 import ProtectedRoute from './ProtectedRoute';
 import LoginPage from './LoginPage';
+import AIChatbot from './AIChatbot';
 import Dashboard from '../pages/Dashboard';
 import TrainList from '../pages/TrainList';
 import Parameters from '../pages/Parameters';
@@ -41,7 +42,7 @@ const MainApp: React.FC = () => {
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
       <TopNavigation />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         <SideNavigation />
         <main className="flex-1 overflow-auto">
           <div className="p-6">
@@ -158,6 +159,11 @@ const MainApp: React.FC = () => {
             </Routes>
           </div>
         </main>
+        
+        {/* AI Chatbot - Dropup style from bottom-right */}
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+          <AIChatbot />
+        </div>
       </div>
     </div>
   );

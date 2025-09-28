@@ -103,7 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const getDepartmentFromEmail = (email: string): 'Rolling Stock' | 'Signalling' | 'Telecom' | 'Maintenance' | 'Marketing' | 'Operations' | 'Cleaning' | 'Depot Control' => {
-    if (email.includes('marketing')) return 'Marketing';
+    if (email.includes('branding') || email.includes('marketing')) return 'Marketing';
     if (email.includes('operations')) return 'Operations';
     if (email.includes('cleaning')) return 'Cleaning';
     if (email.includes('depot')) return 'Depot Control';
@@ -123,7 +123,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       );
     }
     
-    if (email.includes('marketing')) {
+    if (email.includes('branding') || email.includes('marketing')) {
       basePermissions.push(
         'branding_priorities:read',
         'branding_priorities:write'

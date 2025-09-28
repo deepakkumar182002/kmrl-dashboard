@@ -1,123 +1,160 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  Search, 
-  Upload, 
-  Plus, 
-  FileText, 
-  Clock, 
-  CheckCircle, 
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import {
+  Search,
+  Upload,
+  Plus,
+  FileText,
+  Clock,
+  CheckCircle,
   AlertCircle,
   Edit3,
   Trash2,
   User,
-  Calendar
-} from 'lucide-react';
-import { JobCard } from '../types';
+  Calendar,
+  Info,
+} from "lucide-react";
+import { JobCard } from "../types";
 
 const JobCardsManagement: React.FC = () => {
   // Sample data - in real app, this would come from API
   const [jobCards, setJobCards] = useState<JobCard[]>([
     {
-      id: 'JC001',
-      jobId: 'JOB-2024-001',
-      trainId: 'KMRL-001',
-      taskDescription: 'Brake system inspection and maintenance',
-      status: 'In Progress',
-      expectedCompletionDate: new Date('2024-09-25'),
-      assignedTo: 'Team A',
-      priority: 'High',
-      department: 'Maintenance',
+      id: "JC001",
+      jobId: "JOB-2024-001",
+      trainId: "KMRL-001",
+      taskDescription: "Brake system inspection and maintenance",
+      status: "In Progress",
+      expectedCompletionDate: new Date("2024-09-25"),
+      assignedTo: "Team A",
+      priority: "High",
+      department: "Maintenance",
       estimatedHours: 8,
       actualHours: 6,
-      remarks: 'Progressing as planned',
-      createdAt: new Date('2024-09-18'),
-      updatedAt: new Date('2024-09-19')
+      remarks: "Progressing as planned",
+      createdAt: new Date("2024-09-18"),
+      updatedAt: new Date("2024-09-19"),
     },
     {
-      id: 'JC002',
-      jobId: 'JOB-2024-002',
-      trainId: 'KMRL-002',
-      taskDescription: 'Electrical system diagnostics',
-      status: 'Open',
-      expectedCompletionDate: new Date('2024-09-30'),
-      assignedTo: 'Team B',
-      priority: 'Medium',
-      department: 'Electrical',
+      id: "JC002",
+      jobId: "JOB-2024-002",
+      trainId: "KMRL-002",
+      taskDescription: "Electrical system diagnostics",
+      status: "Open",
+      expectedCompletionDate: new Date("2024-09-30"),
+      assignedTo: "Team B",
+      priority: "Medium",
+      department: "Electrical",
       estimatedHours: 12,
-      remarks: 'Waiting for spare parts',
-      createdAt: new Date('2024-09-17'),
-      updatedAt: new Date('2024-09-17')
+      remarks: "Waiting for spare parts",
+      createdAt: new Date("2024-09-17"),
+      updatedAt: new Date("2024-09-17"),
     },
     {
-      id: 'JC003',
-      jobId: 'JOB-2024-003',
-      trainId: 'KMRL-003',
-      taskDescription: 'Interior cleaning and sanitization',
-      status: 'Closed',
-      expectedCompletionDate: new Date('2024-09-20'),
-      actualCompletionDate: new Date('2024-09-20'),
-      assignedTo: 'Cleaning Team',
-      priority: 'Low',
-      department: 'Cleaning',
+      id: "JC003",
+      jobId: "JOB-2024-003",
+      trainId: "KMRL-003",
+      taskDescription: "Interior cleaning and sanitization",
+      status: "Closed",
+      expectedCompletionDate: new Date("2024-09-20"),
+      actualCompletionDate: new Date("2024-09-20"),
+      assignedTo: "Cleaning Team",
+      priority: "Low",
+      department: "Cleaning",
       estimatedHours: 4,
       actualHours: 4,
-      remarks: 'Completed successfully',
-      createdAt: new Date('2024-09-19'),
-      updatedAt: new Date('2024-09-20')
-    }
+      remarks: "Completed successfully",
+      createdAt: new Date("2024-09-19"),
+      updatedAt: new Date("2024-09-20"),
+    },
   ]);
 
   // Form state
   const [showForm, setShowForm] = useState(false);
   const [editingJobCard, setEditingJobCard] = useState<JobCard | null>(null);
+  const [showInfoDropdown, setShowInfoDropdown] = useState(false);
+  const infoDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        infoDropdownRef.current &&
+        !infoDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowInfoDropdown(false);
+      }
+    };
+
+    if (showInfoDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showInfoDropdown]);
+
   const [formData, setFormData] = useState({
-    jobId: '',
-    trainId: '',
-    taskDescription: '',
-    status: 'Open' as 'Open' | 'Closed' | 'In Progress',
-    expectedCompletionDate: '',
-    actualCompletionDate: '',
-    assignedTo: '',
-    priority: 'Medium' as 'High' | 'Medium' | 'Low',
-    department: '',
-    estimatedHours: '',
-    actualHours: '',
-    remarks: ''
+    jobId: "",
+    trainId: "",
+    taskDescription: "",
+    status: "Open" as "Open" | "Closed" | "In Progress",
+    expectedCompletionDate: "",
+    actualCompletionDate: "",
+    assignedTo: "",
+    priority: "Medium" as "High" | "Medium" | "Low",
+    department: "",
+    estimatedHours: "",
+    actualHours: "",
+    remarks: "",
   });
 
   // Filter states
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [priorityFilter, setPriorityFilter] = useState<string>('all');
-  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  const [departmentFilter, setDepartmentFilter] = useState<string>("all");
 
   // File upload state
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
 
   // Mock data for dropdowns
-  const trainIds = ['KMRL-001', 'KMRL-002', 'KMRL-003', 'KMRL-004', 'KMRL-005'];
-  const departments = ['Maintenance', 'Electrical', 'Cleaning', 'Safety', 'Operations'];
-  const teams = ['Team A', 'Team B', 'Team C', 'Cleaning Team', 'Safety Team'];
+  const trainIds = ["KMRL-001", "KMRL-002", "KMRL-003", "KMRL-004", "KMRL-005"];
+  const departments = [
+    "Maintenance",
+    "Electrical",
+    "Cleaning",
+    "Safety",
+    "Operations",
+  ];
+  const teams = ["Team A", "Team B", "Team C", "Cleaning Team", "Safety Team"];
 
   const filteredJobCards = useMemo(() => {
-    return jobCards.filter(jobCard => {
-      const matchesSearch = 
+    return jobCards.filter((jobCard) => {
+      const matchesSearch =
         jobCard.jobId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         jobCard.trainId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        jobCard.taskDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        jobCard.taskDescription
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         jobCard.assignedTo.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || jobCard.status === statusFilter;
-      const matchesPriority = priorityFilter === 'all' || jobCard.priority === priorityFilter;
-      const matchesDepartment = departmentFilter === 'all' || jobCard.department === departmentFilter;
-      
-      return matchesSearch && matchesStatus && matchesPriority && matchesDepartment;
+      const matchesStatus =
+        statusFilter === "all" || jobCard.status === statusFilter;
+      const matchesPriority =
+        priorityFilter === "all" || jobCard.priority === priorityFilter;
+      const matchesDepartment =
+        departmentFilter === "all" || jobCard.department === departmentFilter;
+
+      return (
+        matchesSearch && matchesStatus && matchesPriority && matchesDepartment
+      );
     });
   }, [jobCards, searchTerm, statusFilter, priorityFilter, departmentFilter]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const newJobCard: JobCard = {
       id: editingJobCard?.id || `JC${Date.now()}`,
       jobId: formData.jobId,
@@ -125,23 +162,29 @@ const JobCardsManagement: React.FC = () => {
       taskDescription: formData.taskDescription,
       status: formData.status,
       expectedCompletionDate: new Date(formData.expectedCompletionDate),
-      actualCompletionDate: formData.actualCompletionDate ? new Date(formData.actualCompletionDate) : undefined,
+      actualCompletionDate: formData.actualCompletionDate
+        ? new Date(formData.actualCompletionDate)
+        : undefined,
       assignedTo: formData.assignedTo,
       priority: formData.priority,
       department: formData.department,
       estimatedHours: parseInt(formData.estimatedHours),
-      actualHours: formData.actualHours ? parseInt(formData.actualHours) : undefined,
+      actualHours: formData.actualHours
+        ? parseInt(formData.actualHours)
+        : undefined,
       remarks: formData.remarks,
       createdAt: editingJobCard?.createdAt || new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     if (editingJobCard) {
-      setJobCards(prev => prev.map(jobCard => 
-        jobCard.id === editingJobCard.id ? newJobCard : jobCard
-      ));
+      setJobCards((prev) =>
+        prev.map((jobCard) =>
+          jobCard.id === editingJobCard.id ? newJobCard : jobCard
+        )
+      );
     } else {
-      setJobCards(prev => [...prev, newJobCard]);
+      setJobCards((prev) => [...prev, newJobCard]);
     }
 
     resetForm();
@@ -149,18 +192,18 @@ const JobCardsManagement: React.FC = () => {
 
   const resetForm = () => {
     setFormData({
-      jobId: '',
-      trainId: '',
-      taskDescription: '',
-      status: 'Open',
-      expectedCompletionDate: '',
-      actualCompletionDate: '',
-      assignedTo: '',
-      priority: 'Medium',
-      department: '',
-      estimatedHours: '',
-      actualHours: '',
-      remarks: ''
+      jobId: "",
+      trainId: "",
+      taskDescription: "",
+      status: "Open",
+      expectedCompletionDate: "",
+      actualCompletionDate: "",
+      assignedTo: "",
+      priority: "Medium",
+      department: "",
+      estimatedHours: "",
+      actualHours: "",
+      remarks: "",
     });
     setShowForm(false);
     setEditingJobCard(null);
@@ -173,20 +216,23 @@ const JobCardsManagement: React.FC = () => {
       trainId: jobCard.trainId,
       taskDescription: jobCard.taskDescription,
       status: jobCard.status,
-      expectedCompletionDate: jobCard.expectedCompletionDate.toISOString().split('T')[0],
-      actualCompletionDate: jobCard.actualCompletionDate?.toISOString().split('T')[0] || '',
+      expectedCompletionDate: jobCard.expectedCompletionDate
+        .toISOString()
+        .split("T")[0],
+      actualCompletionDate:
+        jobCard.actualCompletionDate?.toISOString().split("T")[0] || "",
       assignedTo: jobCard.assignedTo,
       priority: jobCard.priority,
       department: jobCard.department,
       estimatedHours: jobCard.estimatedHours.toString(),
-      actualHours: jobCard.actualHours?.toString() || '',
-      remarks: jobCard.remarks || ''
+      actualHours: jobCard.actualHours?.toString() || "",
+      remarks: jobCard.remarks || "",
     });
     setShowForm(true);
   };
 
   const handleDelete = (id: string) => {
-    setJobCards(prev => prev.filter(jobCard => jobCard.id !== id));
+    setJobCards((prev) => prev.filter((jobCard) => jobCard.id !== id));
   };
 
   const handleFileUpload = (e: React.FormEvent) => {
@@ -197,48 +243,48 @@ const JobCardsManagement: React.FC = () => {
     const mockParsedData: JobCard[] = [
       {
         id: `JC${Date.now()}`,
-        jobId: 'JOB-2024-004',
-        trainId: 'KMRL-004',
-        taskDescription: 'Door mechanism maintenance',
-        status: 'Open',
-        expectedCompletionDate: new Date('2024-10-01'),
-        assignedTo: 'Team C',
-        priority: 'Medium',
-        department: 'Maintenance',
+        jobId: "JOB-2024-004",
+        trainId: "KMRL-004",
+        taskDescription: "Door mechanism maintenance",
+        status: "Open",
+        expectedCompletionDate: new Date("2024-10-01"),
+        assignedTo: "Team C",
+        priority: "Medium",
+        department: "Maintenance",
         estimatedHours: 6,
-        remarks: 'Uploaded via CSV',
+        remarks: "Uploaded via CSV",
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     ];
 
-    setJobCards(prev => [...prev, ...mockParsedData]);
+    setJobCards((prev) => [...prev, ...mockParsedData]);
     setUploadFile(null);
     setShowUploadModal(false);
   };
 
-  const getStatusBadge = (status: JobCard['status']) => {
-    const baseClasses = 'px-2 py-1 rounded-full text-xs font-medium';
+  const getStatusBadge = (status: JobCard["status"]) => {
+    const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
     switch (status) {
-      case 'Open':
+      case "Open":
         return `${baseClasses} bg-blue-100 text-blue-700`;
-      case 'In Progress':
+      case "In Progress":
         return `${baseClasses} bg-yellow-100 text-yellow-700`;
-      case 'Closed':
+      case "Closed":
         return `${baseClasses} bg-green-100 text-green-700`;
       default:
         return `${baseClasses} bg-gray-100 text-gray-700`;
     }
   };
 
-  const getPriorityBadge = (priority: JobCard['priority']) => {
-    const baseClasses = 'px-2 py-1 rounded-full text-xs font-medium';
+  const getPriorityBadge = (priority: JobCard["priority"]) => {
+    const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
     switch (priority) {
-      case 'High':
+      case "High":
         return `${baseClasses} bg-red-100 text-red-700`;
-      case 'Medium':
+      case "Medium":
         return `${baseClasses} bg-yellow-100 text-yellow-700`;
-      case 'Low':
+      case "Low":
         return `${baseClasses} bg-gray-100 text-gray-700`;
       default:
         return `${baseClasses} bg-gray-100 text-gray-700`;
@@ -255,17 +301,21 @@ const JobCardsManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Job Cards Management</h1>
-          <p className="text-gray-600">Manage maintenance tasks and job assignments</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Job Cards Management
+          </h1>
+          <p className="text-gray-600">
+            Manage maintenance tasks and job assignments
+          </p>
         </div>
         <div className="flex space-x-3">
-          <button
+          {/* <button
             onClick={() => setShowUploadModal(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Upload className="w-4 h-4" />
             <span>Upload CSV</span>
-          </button>
+          </button> */}
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -273,6 +323,79 @@ const JobCardsManagement: React.FC = () => {
             <Plus className="w-4 h-4" />
             <span>Add Job Card</span>
           </button>
+          {/* Info Dropdown */}
+          <div className="relative" ref={infoDropdownRef}>
+            <button
+              onClick={() => setShowInfoDropdown(!showInfoDropdown)}
+              className="flex items-center justify-center w-10 h-10 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
+              title="Data Flow Information"
+            >
+              <Info className="w-5 h-5" />
+            </button>
+
+            {showInfoDropdown && (
+              <div className="absolute right-0 top-12 w-96 h-96 overflow-y-auto bg-white rounded-lg shadow-xl border border-gray-200 z-50 p-6 animate-fadeIn">
+                <div className="space-y-4">
+                  
+                  <div className="border-t pt-3">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      Job Cards – Data Flow
+                    </h3>
+                    <div className="space-y-2 text-sm text-gray-700">
+                      <p>
+                        <strong>Source:</strong> IBM Maximo / CMMS system
+                        (faults & work orders).
+                      </p>
+                      <p>
+                        <strong>Fields:</strong> Train ID, fault description,
+                        priority, status (Open/Closed).
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      Fetching Method:
+                    </h4>
+                    <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                      <li>REST/OData APIs provided by Maximo.</li>
+                      <li>
+                        Example:{" "}
+                        <code className="bg-gray-100 px-1 rounded">
+                          /api/jobcards?trainId=KMRL-001
+                        </code>{" "}
+                        (returns open/closed jobs).
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="border-t pt-3">
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      Dashboard Rule:
+                    </h4>
+                    <div className="bg-gray-50 p-3 rounded-lg text-sm">
+                      <p className="text-red-600 mb-1">
+                        <strong>Open Job Card →</strong> Not Fit for Service.
+                      </p>
+                      <p className="text-green-600">
+                        <strong>
+                          All Closed Job Cards + Valid Certificates →
+                        </strong>{" "}
+                        Eligible for Service.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* <button
+                              onClick={() => setShowInfoDropdown(false)}
+                              className="w-full mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                              Close
+                            </button> */}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -286,7 +409,7 @@ const JobCardsManagement: React.FC = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Open Jobs</p>
               <p className="text-2xl font-bold text-gray-900">
-                {jobCards.filter(j => j.status === 'Open').length}
+                {jobCards.filter((j) => j.status === "Open").length}
               </p>
             </div>
           </div>
@@ -300,7 +423,7 @@ const JobCardsManagement: React.FC = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">In Progress</p>
               <p className="text-2xl font-bold text-gray-900">
-                {jobCards.filter(j => j.status === 'In Progress').length}
+                {jobCards.filter((j) => j.status === "In Progress").length}
               </p>
             </div>
           </div>
@@ -314,7 +437,7 @@ const JobCardsManagement: React.FC = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Completed</p>
               <p className="text-2xl font-bold text-gray-900">
-                {jobCards.filter(j => j.status === 'Closed').length}
+                {jobCards.filter((j) => j.status === "Closed").length}
               </p>
             </div>
           </div>
@@ -328,7 +451,13 @@ const JobCardsManagement: React.FC = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Overdue</p>
               <p className="text-2xl font-bold text-gray-900">
-                {jobCards.filter(j => j.status !== 'Closed' && isOverdue(j.expectedCompletionDate)).length}
+                {
+                  jobCards.filter(
+                    (j) =>
+                      j.status !== "Closed" &&
+                      isOverdue(j.expectedCompletionDate)
+                  ).length
+                }
               </p>
             </div>
           </div>
@@ -350,7 +479,7 @@ const JobCardsManagement: React.FC = () => {
               />
             </div>
           </div>
-          
+
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -379,8 +508,10 @@ const JobCardsManagement: React.FC = () => {
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="all">All Departments</option>
-            {departments.map(dept => (
-              <option key={dept} value={dept}>{dept}</option>
+            {departments.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
             ))}
           </select>
         </div>
@@ -429,17 +560,24 @@ const JobCardsManagement: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{jobCard.trainId}</div>
-                    <div className="text-sm text-gray-500">{jobCard.department}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {jobCard.trainId}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {jobCard.department}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <User className="w-4 h-4 text-gray-400 mr-2" />
                       <div>
-                        <div className="text-sm text-gray-900">{jobCard.assignedTo}</div>
+                        <div className="text-sm text-gray-900">
+                          {jobCard.assignedTo}
+                        </div>
                         <div className="text-sm text-gray-500">
                           {jobCard.estimatedHours}h est.
-                          {jobCard.actualHours && ` / ${jobCard.actualHours}h actual`}
+                          {jobCard.actualHours &&
+                            ` / ${jobCard.actualHours}h actual`}
                         </div>
                       </div>
                     </div>
@@ -449,16 +587,21 @@ const JobCardsManagement: React.FC = () => {
                       <Calendar className="w-4 h-4 text-gray-400 mr-2" />
                       <div>
                         <div className="text-sm text-gray-900">
-                          Due: {jobCard.expectedCompletionDate.toLocaleDateString()}
+                          Due:{" "}
+                          {jobCard.expectedCompletionDate.toLocaleDateString()}
                         </div>
                         {jobCard.actualCompletionDate && (
                           <div className="text-sm text-gray-500">
-                            Completed: {jobCard.actualCompletionDate.toLocaleDateString()}
+                            Completed:{" "}
+                            {jobCard.actualCompletionDate.toLocaleDateString()}
                           </div>
                         )}
-                        {isOverdue(jobCard.expectedCompletionDate) && jobCard.status !== 'Closed' && (
-                          <div className="text-xs text-red-600 font-medium">Overdue</div>
-                        )}
+                        {isOverdue(jobCard.expectedCompletionDate) &&
+                          jobCard.status !== "Closed" && (
+                            <div className="text-xs text-red-600 font-medium">
+                              Overdue
+                            </div>
+                          )}
                       </div>
                     </div>
                   </td>
@@ -501,42 +644,59 @@ const JobCardsManagement: React.FC = () => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-10 mx-auto p-5 border w-2/3 max-w-4xl shadow-lg rounded-md bg-white">
             <h3 className="text-lg font-bold text-gray-900 mb-4">
-              {editingJobCard ? 'Edit Job Card' : 'Add New Job Card'}
+              {editingJobCard ? "Edit Job Card" : "Add New Job Card"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Job ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Job ID
+                  </label>
                   <input
                     type="text"
                     value={formData.jobId}
-                    onChange={(e) => setFormData({...formData, jobId: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, jobId: e.target.value })
+                    }
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Train ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Train ID
+                  </label>
                   <select
                     value={formData.trainId}
-                    onChange={(e) => setFormData({...formData, trainId: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, trainId: e.target.value })
+                    }
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Train</option>
-                    {trainIds.map(id => (
-                      <option key={id} value={id}>{id}</option>
+                    {trainIds.map((id) => (
+                      <option key={id} value={id}>
+                        {id}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Task Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Task Description
+                </label>
                 <textarea
                   value={formData.taskDescription}
-                  onChange={(e) => setFormData({...formData, taskDescription: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      taskDescription: e.target.value,
+                    })
+                  }
                   required
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -545,10 +705,17 @@ const JobCardsManagement: React.FC = () => {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
                   <select
                     value={formData.status}
-                    onChange={(e) => setFormData({...formData, status: e.target.value as any})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        status: e.target.value as any,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="Open">Open</option>
@@ -558,10 +725,17 @@ const JobCardsManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Priority
+                  </label>
                   <select
                     value={formData.priority}
-                    onChange={(e) => setFormData({...formData, priority: e.target.value as any})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        priority: e.target.value as any,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="High">High</option>
@@ -571,16 +745,22 @@ const JobCardsManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Department
+                  </label>
                   <select
                     value={formData.department}
-                    onChange={(e) => setFormData({...formData, department: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, department: e.target.value })
+                    }
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Department</option>
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
+                    {departments.map((dept) => (
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -588,26 +768,39 @@ const JobCardsManagement: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Assigned To</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Assigned To
+                  </label>
                   <select
                     value={formData.assignedTo}
-                    onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, assignedTo: e.target.value })
+                    }
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Team</option>
-                    {teams.map(team => (
-                      <option key={team} value={team}>{team}</option>
+                    {teams.map((team) => (
+                      <option key={team} value={team}>
+                        {team}
+                      </option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Expected Completion Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Expected Completion Date
+                  </label>
                   <input
                     type="date"
                     value={formData.expectedCompletionDate}
-                    onChange={(e) => setFormData({...formData, expectedCompletionDate: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        expectedCompletionDate: e.target.value,
+                      })
+                    }
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -616,11 +809,18 @@ const JobCardsManagement: React.FC = () => {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Hours</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Estimated Hours
+                  </label>
                   <input
                     type="number"
                     value={formData.estimatedHours}
-                    onChange={(e) => setFormData({...formData, estimatedHours: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        estimatedHours: e.target.value,
+                      })
+                    }
                     required
                     min="1"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -628,38 +828,60 @@ const JobCardsManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Actual Hours</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Actual Hours
+                  </label>
                   <input
                     type="number"
                     value={formData.actualHours}
-                    onChange={(e) => setFormData({...formData, actualHours: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, actualHours: e.target.value })
+                    }
                     min="0"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Actual Completion Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Actual Completion Date
+                  </label>
                   <input
                     type="date"
                     value={formData.actualCompletionDate}
-                    onChange={(e) => setFormData({...formData, actualCompletionDate: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        actualCompletionDate: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Remarks
+                </label>
                 <textarea
                   value={formData.remarks}
-                  onChange={(e) => setFormData({...formData, remarks: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, remarks: e.target.value })
+                  }
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
-              <div className="flex justify-end space-x-3">
+              <div className="flex justify-between space-x-4">
+                <button
+                  onClick={() => setShowUploadModal(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>Upload CSV</span>
+                </button>
                 <button
                   type="button"
                   onClick={resetForm}
@@ -671,7 +893,7 @@ const JobCardsManagement: React.FC = () => {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
-                  {editingJobCard ? 'Update' : 'Add'} Job Card
+                  {editingJobCard ? "Update" : "Add"} Job Card
                 </button>
               </div>
             </form>
@@ -683,7 +905,9 @@ const JobCardsManagement: React.FC = () => {
       {showUploadModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Upload Job Cards</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              Upload Job Cards
+            </h3>
             <form onSubmit={handleFileUpload} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -697,7 +921,11 @@ const JobCardsManagement: React.FC = () => {
                 />
               </div>
               <div className="text-sm text-gray-600">
-                <p>Expected columns: Job ID, Train ID, Task Description, Status, Expected Completion Date, Assigned To, Priority, Department, Estimated Hours, Remarks</p>
+                <p>
+                  Expected columns: Job ID, Train ID, Task Description, Status,
+                  Expected Completion Date, Assigned To, Priority, Department,
+                  Estimated Hours, Remarks
+                </p>
               </div>
               <div className="flex justify-end space-x-3">
                 <button

@@ -10,3 +10,182 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* AI-Enhanced Animations */
+@keyframes neural-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 0 10px rgba(147, 51, 234, 0);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes data-flow {
+  0% { 
+    opacity: 0.3;
+    transform: translateX(-10px);
+  }
+  50% { 
+    opacity: 1;
+    transform: translateX(0px);
+  }
+  100% { 
+    opacity: 0.3;
+    transform: translateX(10px);
+  }
+}
+
+@keyframes ai-glow {
+  0%, 100% { 
+    background: linear-gradient(45deg, #8b5cf6, #3b82f6);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  }
+  50% { 
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+  }
+}
+
+@keyframes confidence-pulse {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.1); }
+}
+
+.neural-pulse {
+  animation: neural-pulse 2s infinite;
+}
+
+.data-flow {
+  animation: data-flow 2s infinite;
+}
+
+.ai-glow {
+  animation: ai-glow 3s infinite;
+}
+
+.confidence-pulse {
+  animation: confidence-pulse 1.5s infinite;
+}
+
+/* Glowing borders for AI components */
+.ai-border-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-border-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.4), transparent);
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes fadeIn {
+  0% { 
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Dropup Animation for AI Assistant */
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+  transform-origin: bottom center;
+}
+
+/* Live Train Animation */
+@keyframes trainPulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    transform: scale(1.1);
+  }
+}
+
+@keyframes trainMoving {
+  0%, 100% {
+    transform: translateX(-2px);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes trainMove {
+  0%, 100% {
+    transform: translateY(-1px) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(1.05);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.live-train-marker {
+  animation: trainPulse 2s infinite, trainMoving 1s infinite;
+  transition: all 0.5s ease-in-out;
+}
+
+.live-train-marker:hover {
+  transform: scale(1.2);
+  z-index: 1000;
+}
+
+.metro-line-glow {
+  filter: drop-shadow(0 0 3px rgba(37, 99, 235, 0.5));
+}
